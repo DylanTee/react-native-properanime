@@ -66,3 +66,5 @@ yarn-error.log
 /coverage
 
 .tool-versions
+
+android/app/build.gradle
