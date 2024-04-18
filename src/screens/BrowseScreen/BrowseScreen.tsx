@@ -10,8 +10,9 @@ import {FlashList} from '@shopify/flash-list';
 import {Colors} from '@styles/Colors';
 import {useQuery} from '@tanstack/react-query';
 import React, {useEffect, useState} from 'react';
-import {Image, TouchableOpacity, View} from 'react-native';
+import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Animated, {useSharedValue} from 'react-native-reanimated';
 
 const Tab = createBottomTabNavigator();
 export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
@@ -19,6 +20,7 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
   navigation,
   route,
 }) => {
+  const scrollY = useSharedValue(0);
   const [status, setStatus] = useState<TAnimeStatus>('airing');
   const getAnimeSearchQuery = useQuery({
     queryKey: ['animeSearch', status],
@@ -29,7 +31,7 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
   });
   const anime = getAnimeSearchQuery.data?.data[0] ?? null;
   const animeListing = getAnimeSearchQuery.data?.data ?? [];
-
+  const imageHeight = sh(210);
   const handleDetail = (id: string) => {
     navigation.navigate('DetailScreen', {id});
   };
@@ -37,11 +39,53 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
   const getContent = (routeName: TAnimeStatus) => {
     return (
       <ContainerLayout>
-        {/* <CustomText label={animeListing.length} size="small" /> */}
         <View style={{flex: 1, backgroundColor: Colors.black}}>
+          <View
+            style={{
+              width: '100%',
+              flex: 1,
+              position: 'absolute',
+              zIndex: 1,
+              padding: sw(10),
+              paddingTop: sw(15),
+              flexDirection: 'row',
+            }}>
+            {animeListing.length > 0 && (
+              <Animated.View
+                style={{
+                  position: 'absolute',
+                  zIndex: -1,
+                  backgroundColor: Colors.black,
+                  width: Dimensions.get('window').width,
+                  height: sh(45),
+                  opacity: scrollY,
+                }}
+              />
+            )}
+            <TouchableOpacity style={{alignItems: 'center'}} onPress={() => {}}>
+              <Image
+                style={{width: sw(25), height: sw(25)}}
+                source={require('@assets/menu.png')}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={{marginLeft: 'auto', alignItems: 'center'}}
+              onPress={() => {}}>
+              <Image
+                style={{width: sw(25), height: sw(25)}}
+                source={require('@assets/search.png')}
+              />
+            </TouchableOpacity>
+          </View>
           <FlashList
+            estimatedItemSize={100}
             numColumns={2}
             data={animeListing}
+            onScroll={e => {
+              if (anime && animeListing.length > 0) {
+                scrollY.value = e.nativeEvent.contentOffset.y / imageHeight;
+              }
+            }}
             ListHeaderComponent={() => (
               <>
                 {anime && (
@@ -132,7 +176,7 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
                   src={item.images.jpg.large_image_url}
                   style={{
                     width: '100%',
-                    height: sh(210),
+                    height: imageHeight,
                   }}
                   resizeMode="cover"
                 />
