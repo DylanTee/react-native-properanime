@@ -31,8 +31,8 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
     },
     enabled: !isTransitioning && searchText.length > 0,
   });
-  const anime = getAnimeSearchQuery.data?.data[0] ?? null;
   const animeListing = getAnimeSearchQuery.data?.data ?? [];
+  const isLoading = getAnimeSearchQuery.isFetching || isTransitioning;
 
   return (
     <>
@@ -80,7 +80,7 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
           )}
         </View>
         <View style={{flex: 1, backgroundColor: Colors.black}}>
-          {getAnimeSearchQuery.isLoading ?? (
+          {isLoading && (
             <ActivityIndicator size={'large'} color={Colors.primary} />
           )}
           <FlashList

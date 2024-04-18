@@ -15,6 +15,7 @@ import {
   View,
   Image,
   Dimensions,
+  ActivityIndicator,
 } from 'react-native';
 import Animated, {useSharedValue} from 'react-native-reanimated';
 
@@ -30,10 +31,14 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const anime = getAnimeDetailQuery.data?.data ?? undefined;
   const imageHeight = Dimensions.get('screen').height * 0.65;
+  const isLoading = getAnimeDetailQuery.isFetching;
   return (
     <>
       <ContainerLayout>
         <View style={{flex: 1, backgroundColor: Colors.black}}>
+          {isLoading && (
+            <ActivityIndicator size={'large'} color={Colors.primary} />
+          )}
           <View
             style={{
               width: '100%',
