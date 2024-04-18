@@ -6,6 +6,7 @@ import axiosClient from '@libs/axios.lib';
 import {AppNavigationScreen} from '@libs/react.navigation.lib';
 import {sh, sw} from '@libs/responsive.lib';
 import {handleWatchTrailer} from '@libs/utils';
+import {useAnimeStore} from '@libs/zustand.lib';
 import {Colors} from '@styles/Colors';
 import {useQuery} from '@tanstack/react-query';
 import React, {useRef} from 'react';
@@ -32,6 +33,10 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
   const anime = getAnimeDetailQuery.data?.data ?? undefined;
   const imageHeight = Dimensions.get('screen').height * 0.65;
   const isLoading = getAnimeDetailQuery.isFetching;
+  const lovedAnimes = useAnimeStore(state => state.lovedAnimes);
+  const love = useAnimeStore(state => state.love);
+  const unlove = useAnimeStore(state => state.unlove);
+
   return (
     <>
       <ContainerLayout>
@@ -172,6 +177,7 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
                   />
                 </View>
                 <SizedBox width={sw(10)} />
+
                 <TouchableOpacity
                   style={{
                     flex: 1,
@@ -180,24 +186,37 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
                     borderWidth: 2,
                     borderRadius: sw(5),
                     borderColor: Colors.primary,
+                  }}
+                  onPress={() => {
+                    if (lovedAnimes.find(data => data.mal_id == anime.mal_id)) {
+                      unlove(anime.mal_id);
+                    } else {
+                      love([
+                        ...lovedAnimes,
+                        {
+                          mal_id: anime.mal_id,
+                          title: anime.title,
+                          rating: anime.rating,
+                          score: anime.score,
+                          image: anime.images.jpg.large_image_url,
+                          year: anime.year,
+                        },
+                      ]);
+                    }
                   }}>
-                  <Image
-                    style={{width: sw(25), height: sw(25)}}
-                    source={require('@assets/unactive_love.png')}
-                  />
+                  {lovedAnimes.find(data => data.mal_id == anime.mal_id) ? (
+                    <Image
+                      style={{width: sw(25), height: sw(25)}}
+                      source={require('@assets/active_love.png')}
+                    />
+                  ) : (
+                    <Image
+                      style={{width: sw(25), height: sw(25)}}
+                      source={require('@assets/unactive_love.png')}
+                    />
+                  )}
                 </TouchableOpacity>
               </View>
-              {/* <Animated.View
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              backgroundColor: 'black',
-              opacity: opacity,
-            }}
-          /> */}
             </>
           )}
         </View>

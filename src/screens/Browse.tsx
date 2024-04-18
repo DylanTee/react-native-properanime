@@ -20,10 +20,14 @@ import {
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Animated, {useSharedValue} from 'react-native-reanimated';
 import AnimeCard from '@components/Shared/AnimeCard';
+import {useAnimeStore} from '@libs/zustand.lib';
 
 const Tab = createBottomTabNavigator();
 export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
 const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
+  const lovedAnimes = useAnimeStore(state => state.lovedAnimes);
+  const love = useAnimeStore(state => state.love);
+  const unlove = useAnimeStore(state => state.unlove);
   const scrollY = useSharedValue(0);
   const [status, setStatus] = useState<TAnimeStatus>('airing');
   const getAnimeSearchQuery = useQuery({
@@ -153,11 +157,41 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
                               borderWidth: 2,
                               borderRadius: sw(5),
                               borderColor: Colors.primary,
+                            }}
+                            onPress={() => {
+                              if (
+                                lovedAnimes.find(
+                                  data => data.mal_id == anime.mal_id,
+                                )
+                              ) {
+                                unlove(anime.mal_id);
+                              } else {
+                                love([
+                                  ...lovedAnimes,
+                                  {
+                                    mal_id: anime.mal_id,
+                                    title: anime.title,
+                                    rating: anime.rating,
+                                    score: anime.score,
+                                    image: anime.images.jpg.large_image_url,
+                                    year: anime.year,
+                                  },
+                                ]);
+                              }
                             }}>
-                            <Image
-                              style={{width: sw(25), height: sw(25)}}
-                              source={require('@assets/unactive_love.png')}
-                            />
+                            {lovedAnimes.find(
+                              data => data.mal_id == anime.mal_id,
+                            ) ? (
+                              <Image
+                                style={{width: sw(25), height: sw(25)}}
+                                source={require('@assets/active_love.png')}
+                              />
+                            ) : (
+                              <Image
+                                style={{width: sw(25), height: sw(25)}}
+                                source={require('@assets/unactive_love.png')}
+                              />
+                            )}
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -178,6 +212,7 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
               renderItem={({item, index}: {item: any; index: number}) => (
                 <AnimeCard
                   data={{
+                    mal_id: item.mal_id,
                     year: item.year,
                     title: item.title,
                     rating: item.rating,

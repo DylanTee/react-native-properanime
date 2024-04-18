@@ -5,7 +5,6 @@ import {Text, TextStyle, View} from 'react-native';
 
 type CustomTextProps = {
   styles?: TextStyle;
-  isRequired?: boolean;
   label: string;
   size: 'big' | 'medium' | 'small';
   numberOfLines?: number;
@@ -13,7 +12,6 @@ type CustomTextProps = {
 
 const CustomText = ({
   styles,
-  isRequired = false,
   label,
   size,
   numberOfLines,
@@ -40,7 +38,6 @@ const CustomText = ({
       <Text numberOfLines={numberOfLines} style={textStyles}>
         {label}
       </Text>
-      {isRequired && <Text style={[textStyles, {color: Colors.red}]}>*</Text>}
     </View>
   );
 };

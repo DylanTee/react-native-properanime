@@ -100,7 +100,11 @@ export default function Router() {
             drawerItemStyle: {display: 'none'},
           }}
         />
-        <Drawer.Screen name="Favorite" options={{}} component={Favorite} />
+        <Drawer.Screen
+          name="Favorite"
+          options={{headerShown: false}}
+          component={Favorite}
+        />
         <Drawer.Screen
           name="Search"
           options={{

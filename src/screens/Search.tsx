@@ -108,6 +108,7 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
               renderItem={({item, index}: {item: any; index: number}) => (
                 <AnimeCard
                   data={{
+                    mal_id: item.mal_id,
                     year: item.year,
                     title: item.title,
                     rating: item.rating,
