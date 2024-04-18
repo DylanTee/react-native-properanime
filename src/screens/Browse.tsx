@@ -9,10 +9,11 @@ import {handleWatchTrailer} from '@libs/utils';
 import {FlashList} from '@shopify/flash-list';
 import {Colors} from '@styles/Colors';
 import {useQuery} from '@tanstack/react-query';
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Animated, {useSharedValue} from 'react-native-reanimated';
+import AnimeCard from '@components/Shared/AnimeCard';
 
 const Tab = createBottomTabNavigator();
 export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
@@ -162,72 +163,22 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
               </>
             )}
             renderItem={({item, index}: {item: any; index: number}) => (
-              <TouchableOpacity
-                activeOpacity={1}
-                style={{
+              <AnimeCard
+                data={{
+                  year: item.year,
+                  title: item.title,
+                  rating: item.rating,
+                  score: item.score,
+                  image: item.images.jpg.large_image_url,
+                }}
+                styles={{
                   padding: '5%',
                   paddingRight: index % 2 ? '5%' : '2%',
                   paddingLeft: index % 2 ? '2%' : '5%',
                   flex: 1,
                 }}
-                onPress={() => handleDetail(item.mal_id)}>
-                <Image
-                  src={item.images.jpg.large_image_url}
-                  style={{
-                    width: '100%',
-                    height: imageHeight,
-                  }}
-                  resizeMode="cover"
-                />
-                <SizedBox height={sh(3)} />
-                <CustomText
-                  numberOfLines={1}
-                  label={item.title}
-                  size="medium"
-                  styles={{
-                    color: Colors.white,
-                  }}
-                />
-                <SizedBox height={sh(3)} />
-                <View
-                  style={{
-                    flex: 1,
-                    flexDirection: 'row',
-                  }}>
-                  <View style={{flex: 5}}>
-                    <CustomText
-                      label={`Score: ${item.score} | ${item.year}`}
-                      size="small"
-                      styles={{
-                        color: Colors.lightGray,
-                      }}
-                    />
-                    <CustomText
-                      label={`${item.rating}`}
-                      size="small"
-                      styles={{
-                        color: Colors.lightGray,
-                      }}
-                    />
-                  </View>
-                  <SizedBox width={sw(10)} />
-                  <TouchableOpacity
-                    style={{
-                      justifyContent: 'center',
-                      alignItems: 'center',
-                      borderWidth: 2,
-                      borderRadius: sw(5),
-                      borderColor: Colors.primary,
-                      width: sw(35),
-                      height: sw(35),
-                    }}>
-                    <Image
-                      style={{width: sw(25), height: sw(25)}}
-                      source={require('@assets/unactive_love.png')}
-                    />
-                  </TouchableOpacity>
-                </View>
-              </TouchableOpacity>
+                onPress={() => handleDetail(item.mal_id)}
+              />
             )}
           />
         </View>

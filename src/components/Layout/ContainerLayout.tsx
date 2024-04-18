@@ -3,6 +3,7 @@ import {SafeAreaView, StatusBar, View, useWindowDimensions} from 'react-native';
 import {DeviceInfoLib} from '@libs/device.info.lib';
 import {Colors} from '@styles/Colors';
 import {Global} from '@styles/Global';
+import {navigationRef} from '@libs/react.navigation.lib';
 
 interface LayoutProps {
   children: ReactNode;
@@ -10,9 +11,13 @@ interface LayoutProps {
 
 export default function ContainerLayout({children}: LayoutProps) {
   const windowDimensions = useWindowDimensions();
+  const isSearchScreen =
+    navigationRef.getCurrentRoute()?.name == 'Search' ?? false;
   return (
     <SafeAreaView style={{flex: 1}}>
-      <StatusBar backgroundColor={Colors.black} />
+      <StatusBar
+        backgroundColor={isSearchScreen ? Colors.lightBlack : Colors.black}
+      />
       {DeviceInfoLib.isTablet ? (
         <View
           style={[

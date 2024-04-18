@@ -1,7 +1,6 @@
 import ContainerLayout from '@components/Layout/ContainerLayout';
 import CustomButton from '@components/Shared/CustomButton';
 import CustomText from '@components/Shared/CustomText';
-import Header from '@components/Shared/Header';
 import SizedBox from '@components/Shared/SizedBox';
 import axiosClient from '@libs/axios.lib';
 import {AppNavigationScreen} from '@libs/react.navigation.lib';
@@ -19,10 +18,7 @@ import {
 } from 'react-native';
 import Animated, {useSharedValue} from 'react-native-reanimated';
 
-const Detail: AppNavigationScreen<'Detail'> = ({
-  navigation,
-  route,
-}) => {
+const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
   const scrollY = useSharedValue(1);
   const getAnimeDetailQuery = useQuery({
     queryKey: ['animeDetail', route.params.id],
@@ -38,9 +34,24 @@ const Detail: AppNavigationScreen<'Detail'> = ({
     <>
       <ContainerLayout>
         <View style={{flex: 1, backgroundColor: Colors.black}}>
-          <Header
-            onBack={() => navigation.goBack()}
-          />
+          <View
+            style={{
+              width: '100%',
+              flex: 1,
+              position: 'absolute',
+              zIndex: 1,
+              padding: sw(10),
+              paddingTop: sw(15),
+            }}>
+            <TouchableOpacity
+              style={{flexDirection: 'row', alignItems: 'center'}}
+              onPress={() => navigation.goBack()}>
+              <Image
+                style={{width: sw(30), height: sw(30)}}
+                source={require('@assets/left.png')}
+              />
+            </TouchableOpacity>
+          </View>
           {anime && (
             <>
               <Animated.Image

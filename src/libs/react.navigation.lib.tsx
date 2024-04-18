@@ -8,7 +8,11 @@ import Browse from '@screens/Browse';
 import Detail from '@screens/Detail';
 import Favorite from '@screens/Favorite';
 import Search from '@screens/Search';
-import {createDrawerNavigator,DrawerNavigationProp,DrawerScreenProps} from '@react-navigation/drawer';
+import {
+  createDrawerNavigator,
+  DrawerNavigationProp,
+  DrawerScreenProps,
+} from '@react-navigation/drawer';
 
 export const navigationRef = createNavigationContainerRef<AppDrawerParamList>();
 export type AppDrawerNavigationProp = DrawerNavigationProp<AppDrawerParamList>;
@@ -48,6 +52,7 @@ export default function Router() {
             color: Colors.white,
           },
         }}
+        backBehavior="history"
         initialRouteName="Browse">
         <Drawer.Screen
           name="Browse"
@@ -65,11 +70,7 @@ export default function Router() {
             drawerItemStyle: {display: 'none'},
           }}
         />
-        <Drawer.Screen
-          name="Favorite"
-          options={{}}
-          component={Favorite}
-        />
+        <Drawer.Screen name="Favorite" options={{}} component={Favorite} />
         <Drawer.Screen
           name="Search"
           options={{
