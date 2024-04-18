@@ -8,7 +8,7 @@ import {sh, sw} from '@libs/responsive.lib';
 import {handleWatchTrailer} from '@libs/utils';
 import {Colors} from '@styles/Colors';
 import {useQuery} from '@tanstack/react-query';
-import React, {useEffect, useRef} from 'react';
+import React, {useRef} from 'react';
 import {
   ScrollView,
   TouchableOpacity,
