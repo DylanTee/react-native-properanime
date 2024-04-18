@@ -16,6 +16,7 @@ import {useQuery} from '@tanstack/react-query';
 import axiosClient from '@libs/axios.lib';
 import {FlashList} from '@shopify/flash-list';
 import AnimeCard from '@components/Shared/AnimeCard';
+import CustomText from '@components/Shared/CustomText';
 
 const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
   const [searchText, setSearchText] = useState<string>('');
@@ -80,34 +81,52 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
           )}
         </View>
         <View style={{flex: 1, backgroundColor: Colors.black}}>
-          {isLoading && (
-            <ActivityIndicator size={'large'} color={Colors.primary} />
+          {isLoading ? (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <ActivityIndicator size={'large'} color={Colors.primary} />
+            </View>
+          ) : (
+            <FlashList
+              estimatedItemSize={100}
+              numColumns={2}
+              data={animeListing}
+              ListHeaderComponent={() => (
+                <View style={{padding: sw(10), paddingBottom: 0}}>
+                  {animeListing.length > 0 && (
+                    <CustomText
+                      numberOfLines={3}
+                      label={'Top Results'}
+                      size="medium"
+                      styles={{
+                        color: Colors.white,
+                      }}
+                    />
+                  )}
+                </View>
+              )}
+              renderItem={({item, index}: {item: any; index: number}) => (
+                <AnimeCard
+                  data={{
+                    year: item.year,
+                    title: item.title,
+                    rating: item.rating,
+                    score: item.score,
+                    image: item.images.jpg.large_image_url,
+                  }}
+                  styles={{
+                    padding: '5%',
+                    paddingRight: index % 2 ? '5%' : '2%',
+                    paddingLeft: index % 2 ? '2%' : '5%',
+                    flex: 1,
+                  }}
+                  onPress={() => {
+                    navigation.navigate('Detail', {id: item.mal_id});
+                  }}
+                />
+              )}
+            />
           )}
-          <FlashList
-            estimatedItemSize={100}
-            numColumns={2}
-            data={animeListing}
-            renderItem={({item, index}: {item: any; index: number}) => (
-              <AnimeCard
-                data={{
-                  year: item.year,
-                  title: item.title,
-                  rating: item.rating,
-                  score: item.score,
-                  image: item.images.jpg.large_image_url,
-                }}
-                styles={{
-                  padding: '5%',
-                  paddingRight: index % 2 ? '5%' : '2%',
-                  paddingLeft: index % 2 ? '2%' : '5%',
-                  flex: 1,
-                }}
-                onPress={() => {
-                  navigation.navigate('Detail', {id: item.mal_id});
-                }}
-              />
-            )}
-          />
         </View>
       </ContainerLayout>
     </>

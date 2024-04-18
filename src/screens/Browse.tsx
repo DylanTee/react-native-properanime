@@ -10,7 +10,13 @@ import {FlashList} from '@shopify/flash-list';
 import {Colors} from '@styles/Colors';
 import {useQuery} from '@tanstack/react-query';
 import React, {useState} from 'react';
-import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Dimensions,
+  Image,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Animated, {useSharedValue} from 'react-native-reanimated';
 import AnimeCard from '@components/Shared/AnimeCard';
@@ -33,6 +39,7 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
   const handleDetail = (id: string) => {
     navigation.navigate('Detail', {id});
   };
+  const isLoading = getAnimeSearchQuery.isFetching;
 
   const getContent = (routeName: TAnimeStatus) => {
     return (
@@ -77,110 +84,117 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
               />
             </TouchableOpacity>
           </View>
-          <FlashList
-            estimatedItemSize={100}
-            numColumns={2}
-            data={animeListing}
-            onScroll={e => {
-              if (anime && animeListing.length > 0) {
-                scrollY.value = e.nativeEvent.contentOffset.y / imageHeight;
-              }
-            }}
-            ListHeaderComponent={() => (
-              <>
-                {anime && (
-                  <TouchableOpacity
-                    activeOpacity={1}
-                    onPress={() => handleDetail(anime.mal_id)}>
-                    <Image
-                      src={anime.images.jpg.large_image_url}
-                      style={{
-                        width: '100%',
-                        height: sh(210),
-                      }}
-                      resizeMode="cover"
-                    />
-                    <SizedBox height={sh(10)} />
-                    <View
-                      style={{
-                        marginHorizontal: sw(10),
-                      }}>
-                      <CustomText
-                        numberOfLines={3}
-                        label={anime.background}
-                        size="medium"
-                        styles={{
-                          color: Colors.white,
+          {isLoading ? (
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <ActivityIndicator size={'large'} color={Colors.primary} />
+            </View>
+          ) : (
+            <FlashList
+              estimatedItemSize={100}
+              numColumns={2}
+              data={animeListing}
+              onScroll={e => {
+                if (anime && animeListing.length > 0) {
+                  scrollY.value = e.nativeEvent.contentOffset.y / imageHeight;
+                }
+              }}
+              ListHeaderComponent={() => (
+                <>
+                  {anime && (
+                    <TouchableOpacity
+                      activeOpacity={1}
+                      onPress={() => handleDetail(anime.mal_id)}>
+                      <Image
+                        src={anime.images.jpg.large_image_url}
+                        style={{
+                          width: '100%',
+                          height: sh(210),
                         }}
+                        resizeMode="cover"
                       />
                       <SizedBox height={sh(10)} />
-                      <View style={{flexDirection: 'row'}}>
-                        <View style={{flex: 8}}>
-                          <CustomButton
-                            icon={
-                              <Image
-                                style={{width: sw(20), height: sw(20)}}
-                                source={require('@assets/play.png')}
-                              />
-                            }
-                            type={'primary'}
-                            size={'medium'}
-                            title="START WATCHING TRAILER"
-                            onPress={() =>
-                              handleWatchTrailer(anime.trailer.embed_url)
-                            }
-                          />
+                      <View
+                        style={{
+                          marginHorizontal: sw(10),
+                        }}>
+                        <CustomText
+                          numberOfLines={3}
+                          label={anime.background}
+                          size="medium"
+                          styles={{
+                            color: Colors.white,
+                          }}
+                        />
+                        <SizedBox height={sh(10)} />
+                        <View style={{flexDirection: 'row'}}>
+                          <View style={{flex: 8}}>
+                            <CustomButton
+                              icon={
+                                <Image
+                                  style={{width: sw(20), height: sw(20)}}
+                                  source={require('@assets/play.png')}
+                                />
+                              }
+                              type={'primary'}
+                              size={'medium'}
+                              title="START WATCHING TRAILER"
+                              onPress={() =>
+                                handleWatchTrailer(anime.trailer.embed_url)
+                              }
+                            />
+                          </View>
+                          <SizedBox width={sw(10)} />
+                          <TouchableOpacity
+                            style={{
+                              flex: 1,
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              borderWidth: 2,
+                              borderRadius: sw(5),
+                              borderColor: Colors.primary,
+                            }}>
+                            <Image
+                              style={{width: sw(25), height: sw(25)}}
+                              source={require('@assets/unactive_love.png')}
+                            />
+                          </TouchableOpacity>
                         </View>
-                        <SizedBox width={sw(10)} />
-                        <TouchableOpacity
-                          style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderWidth: 2,
-                            borderRadius: sw(5),
-                            borderColor: Colors.primary,
-                          }}>
-                          <Image
-                            style={{width: sw(25), height: sw(25)}}
-                            source={require('@assets/unactive_love.png')}
-                          />
-                        </TouchableOpacity>
                       </View>
-                    </View>
-                  </TouchableOpacity>
-                )}
-                <SizedBox height={sh(30)} />
-                <CustomText
-                  numberOfLines={1}
-                  label={'TOP PICKS FOR YOU'}
-                  size="big"
-                  styles={{
-                    color: Colors.white,
-                    marginHorizontal: sw(10),
+                    </TouchableOpacity>
+                  )}
+                  <SizedBox height={sh(30)} />
+                  <CustomText
+                    numberOfLines={1}
+                    label={'TOP PICKS FOR YOU'}
+                    size="big"
+                    styles={{
+                      color: Colors.white,
+                      marginHorizontal: sw(10),
+                    }}
+                  />
+                </>
+              )}
+              renderItem={({item, index}: {item: any; index: number}) => (
+                <AnimeCard
+                  data={{
+                    year: item.year,
+                    title: item.title,
+                    rating: item.rating,
+                    score: item.score,
+                    image: item.images.jpg.large_image_url,
                   }}
+                  styles={{
+                    padding: '5%',
+                    paddingRight: index % 2 ? '5%' : '2%',
+                    paddingLeft: index % 2 ? '2%' : '5%',
+                    flex: 1,
+                  }}
+                  onPress={() => handleDetail(item.mal_id)}
                 />
-              </>
-            )}
-            renderItem={({item, index}: {item: any; index: number}) => (
-              <AnimeCard
-                data={{
-                  year: item.year,
-                  title: item.title,
-                  rating: item.rating,
-                  score: item.score,
-                  image: item.images.jpg.large_image_url,
-                }}
-                styles={{
-                  padding: '5%',
-                  paddingRight: index % 2 ? '5%' : '2%',
-                  paddingLeft: index % 2 ? '2%' : '5%',
-                  flex: 1,
-                }}
-                onPress={() => handleDetail(item.mal_id)}
-              />
-            )}
-          />
+              )}
+            />
+          )}
         </View>
       </ContainerLayout>
     );

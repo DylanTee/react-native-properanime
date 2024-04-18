@@ -37,7 +37,10 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
       <ContainerLayout>
         <View style={{flex: 1, backgroundColor: Colors.black}}>
           {isLoading && (
-            <ActivityIndicator size={'large'} color={Colors.primary} />
+            <View
+              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+              <ActivityIndicator size={'large'} color={Colors.primary} />
+            </View>
           )}
           <View
             style={{
