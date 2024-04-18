@@ -10,9 +10,14 @@ import Favorite from '@screens/Favorite';
 import Search from '@screens/Search';
 import {
   createDrawerNavigator,
+  DrawerItemList,
   DrawerNavigationProp,
   DrawerScreenProps,
 } from '@react-navigation/drawer';
+import {Image, View} from 'react-native';
+import {sh, sw} from './responsive.lib';
+import SizedBox from '@components/Shared/SizedBox';
+import CustomText from '@components/Shared/CustomText';
 
 export const navigationRef = createNavigationContainerRef<AppDrawerParamList>();
 export type AppDrawerNavigationProp = DrawerNavigationProp<AppDrawerParamList>;
@@ -52,6 +57,31 @@ export default function Router() {
             color: Colors.white,
           },
         }}
+        drawerContent={props => (
+          <View>
+            <Image
+              style={{
+                width: sw(50),
+                height: sw(50),
+                borderRadius: sw(5),
+                margin: sw(15),
+              }}
+              source={require('@assets/logo.png')}
+            />
+            <DrawerItemList {...props} />
+            <SizedBox height={sh(20)} />
+            <View style={{alignItems: 'center'}}>
+              <CustomText
+                numberOfLines={1}
+                label={'Version 1.0.0'}
+                size="medium"
+                styles={{
+                  color: Colors.lightGray,
+                }}
+              />
+            </View>
+          </View>
+        )}
         backBehavior="history"
         initialRouteName="Browse">
         <Drawer.Screen
