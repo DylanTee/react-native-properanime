@@ -17,21 +17,12 @@ import SearchScreen from '@screens/SearchScreen/SearchScreen';
 export const navigationRef = createNavigationContainerRef<AppStackParamList>();
 export type AppStackNavigationProp = StackNavigationProp<AppStackParamList>;
 
-export type TAnimeStatus = 'airing'|'complete'|'upcoming'
 export type AppStackParamList = {
-  BrowseScreen: {
-    status: TAnimeStatus;
-  };
-  CompleteScreen: {
-    status: 'complete';
-  };
+  BrowseScreen?: undefined;
   DetailScreen: {
     id: string;
   };
   FavoriteScreen?: undefined;
-  UpcomingScreen: {
-    status: 'upcoming';
-  };
   SearchScreen?: undefined;
 };
 
@@ -76,7 +67,6 @@ export default function Router() {
         screenOptions={{cardStyle: {backgroundColor: Colors.white}}}>
         <AppStack.Screen
           name="BrowseScreen"
-          initialParams={{status: 'airing'}}
           component={BrowseScreen}
           options={options}
         />
@@ -90,7 +80,7 @@ export default function Router() {
           component={FavoriteScreen}
           options={options}
         />
-               <AppStack.Screen
+        <AppStack.Screen
           name="SearchScreen"
           component={SearchScreen}
           options={options}

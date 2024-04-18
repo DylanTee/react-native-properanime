@@ -9,19 +9,21 @@ import {handleWatchTrailer} from '@libs/utils';
 import {FlashList} from '@shopify/flash-list';
 import {Colors} from '@styles/Colors';
 import {useQuery} from '@tanstack/react-query';
-import React from 'react';
-import {Image, Linking, TouchableOpacity, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Image, TouchableOpacity, View} from 'react-native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
+const Tab = createBottomTabNavigator();
+export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
 const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
   navigation,
   route,
 }) => {
+  const [status, setStatus] = useState<TAnimeStatus>('airing');
   const getAnimeSearchQuery = useQuery({
-    queryKey: ['animeSearch', route.params.status],
+    queryKey: ['animeSearch', status],
     queryFn: async () => {
-      const {data} = await axiosClient.get(
-        `/v4/anime?status=${route.params.status}`,
-      );
+      const {data} = await axiosClient.get(`/v4/anime?status=${status}`);
       return data;
     },
   });
@@ -32,8 +34,8 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
     navigation.navigate('DetailScreen', {id});
   };
 
-  return (
-    <>
+  const getContent = (routeName: TAnimeStatus) => {
+    return (
       <ContainerLayout>
         {/* <CustomText label={animeListing.length} size="small" /> */}
         <View style={{flex: 1, backgroundColor: Colors.black}}>
@@ -187,6 +189,125 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
           />
         </View>
       </ContainerLayout>
+    );
+  };
+
+  return (
+    <>
+      <Tab.Navigator
+        screenOptions={{
+          headerStyle: {
+            height: 0,
+          },
+          tabBarStyle: {
+            borderTopWidth: 0,
+          },
+          tabBarActiveTintColor: Colors.primary,
+          tabBarActiveBackgroundColor: '#23242A',
+          tabBarInactiveTintColor: Colors.white,
+          tabBarInactiveBackgroundColor: '#23242A',
+        }}>
+        {/* <Tab.Screen
+          name="Airing"
+          options={{
+            tabBarIcon: () => (
+            
+
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require(`@assets/active-signal.png`)}
+                  />
+               
+
+            ),
+          }}
+          component={() => <>{getContent()}</>}
+        /> */}
+        <Tab.Screen
+          name="Airing"
+          options={{
+            tabBarIcon: () => (
+              <>
+                {status == 'airing' ? (
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require('@assets/active-signal.png')}
+                  />
+                ) : (
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require('@assets/unactive-signal.png')}
+                  />
+                )}
+              </>
+            ),
+          }}
+          listeners={{
+            tabPress: e => {
+              setStatus('airing');
+            },
+          }}>
+          {props => {
+            return getContent(props.route.name.toLowerCase() as any);
+          }}
+        </Tab.Screen>
+        <Tab.Screen
+          name="Complete"
+          options={{
+            tabBarIcon: () => (
+              <>
+                {status == 'complete' ? (
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require('@assets/active-checked-checkbox.png')}
+                  />
+                ) : (
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require('@assets/unactive-checked-checkbox.png')}
+                  />
+                )}
+              </>
+            ),
+          }}
+          listeners={{
+            tabPress: e => {
+              setStatus('complete');
+            },
+          }}>
+          {props => {
+            return getContent(props.route.name.toLowerCase() as any);
+          }}
+        </Tab.Screen>
+        <Tab.Screen
+          name="UpComing"
+          options={{
+            tabBarIcon: () => (
+              <>
+                {status == 'upcoming' ? (
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require('@assets/active-event-accepted-tentatively.png')}
+                  />
+                ) : (
+                  <Image
+                    style={{width: sw(25), height: sw(25)}}
+                    source={require('@assets/unactive-event-accepted-tentatively.png')}
+                  />
+                )}
+              </>
+            ),
+          }}
+          listeners={{
+            tabPress: e => {
+              setStatus('upcoming');
+            },
+          }}>
+          {props => {
+            return getContent(props.route.name.toLowerCase() as any);
+          }}
+        </Tab.Screen>
+      </Tab.Navigator>
     </>
   );
 };
