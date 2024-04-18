@@ -3,89 +3,82 @@ import {
   createNavigationContainerRef,
   NavigationContainer,
 } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackNavigationProp,
-  StackScreenProps,
-} from '@react-navigation/stack';
 import {Colors} from '../styles/Colors';
-import BrowseScreen from '@screens/BrowseScreen/BrowseScreen';
-import DetailScreen from '@screens/DetailScreen/DetailScreen';
-import FavoriteScreen from '@screens/FavoriteScreen/FavoriteScreen';
-import SearchScreen from '@screens/SearchScreen/SearchScreen';
+import Browse from '@screens/Browse';
+import Detail from '@screens/Detail';
+import Favorite from '@screens/Favorite';
+import Search from '@screens/Search';
+import {createDrawerNavigator,DrawerNavigationProp,DrawerScreenProps} from '@react-navigation/drawer';
 
-export const navigationRef = createNavigationContainerRef<AppStackParamList>();
-export type AppStackNavigationProp = StackNavigationProp<AppStackParamList>;
+export const navigationRef = createNavigationContainerRef<AppDrawerParamList>();
+export type AppDrawerNavigationProp = DrawerNavigationProp<AppDrawerParamList>;
 
-export type AppStackParamList = {
-  BrowseScreen?: undefined;
-  DetailScreen: {
+export type AppDrawerParamList = {
+  Browse?: undefined;
+  Detail: {
     id: string;
   };
-  FavoriteScreen?: undefined;
-  SearchScreen?: undefined;
+  Favorite?: undefined;
+  Search?: undefined;
 };
 
 /**
  * Abstraction over the different navigation props
  */
 export type AppNavigationScreenProps<
-  TName extends keyof AppStackParamList = keyof AppStackParamList,
-> = StackScreenProps<AppStackParamList, TName>;
+  TName extends keyof AppDrawerParamList = keyof AppDrawerParamList,
+> = DrawerScreenProps<AppDrawerParamList, TName>;
 /**
  * Abstraction over React.FC which only allows known routes
  */
-export type AppNavigationScreen<TName extends keyof AppStackParamList> = FC<
+export type AppNavigationScreen<TName extends keyof AppDrawerParamList> = FC<
   AppNavigationScreenProps<TName>
 >;
 
 export default function Router() {
-  const AppStack = createStackNavigator<AppStackParamList>();
-  const options = {
-    headerShown: false,
-    gestureEnabled: false,
-    animationEnabled: true,
-  };
+  const Drawer = createDrawerNavigator<AppDrawerParamList>();
   return (
-    <NavigationContainer<AppStackParamList>
-      ref={navigationRef}
-      onStateChange={state => {
-        // const currentScreenName = state?.routes[state.routes.length - 1].name as unknown as
-        //     | keyof AppStackParamList
-        //     | undefined;
-        // if (
-        //     currentScreenName &&
-        //     (currentScreenName == 'SubscriptionScreen' ||
-        //         currentScreenName == 'ShareUserScreen' ||
-        //         currentScreenName == 'TransactionAccountSwitchScreen')
-        // ) {
-        //     refreshGetUserInfo();
-        // }
-      }}>
-      <AppStack.Navigator
-        initialRouteName="BrowseScreen"
-        screenOptions={{cardStyle: {backgroundColor: Colors.white}}}>
-        <AppStack.Screen
-          name="BrowseScreen"
-          component={BrowseScreen}
-          options={options}
+    <NavigationContainer<AppDrawerParamList> ref={navigationRef}>
+      <Drawer.Navigator
+        screenOptions={{
+          drawerStyle: {
+            backgroundColor: Colors.black,
+          },
+          drawerLabelStyle: {
+            color: Colors.white,
+          },
+        }}
+        initialRouteName="Browse">
+        <Drawer.Screen
+          name="Browse"
+          component={Browse}
+          options={{
+            headerShown: false,
+            drawerItemStyle: {display: 'none'},
+          }}
         />
-        <AppStack.Screen
-          name="DetailScreen"
-          component={DetailScreen}
-          options={options}
+        <Drawer.Screen
+          name="Detail"
+          component={Detail}
+          options={{
+            headerShown: false,
+            drawerItemStyle: {display: 'none'},
+          }}
         />
-        <AppStack.Screen
-          name="FavoriteScreen"
-          component={FavoriteScreen}
-          options={options}
+        <Drawer.Screen
+          name="Favorite"
+          options={{}}
+          component={Favorite}
         />
-        <AppStack.Screen
-          name="SearchScreen"
-          component={SearchScreen}
-          options={options}
+        <Drawer.Screen
+          name="Search"
+          options={{
+            headerShown: false,
+            drawerItemStyle: {display: 'none'},
+          }}
+          component={Search}
         />
-      </AppStack.Navigator>
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 }

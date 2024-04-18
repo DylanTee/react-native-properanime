@@ -3,13 +3,13 @@ import CustomText from '@components/Shared/CustomText';
 import {AppNavigationScreen} from '@libs/react.navigation.lib';
 import React from 'react';
 
-const FavoriteScreen: AppNavigationScreen<'FavoriteScreen'> = ({navigation, route}) => {
+const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
   return (
     <>
       <ContainerLayout>
-        <CustomText label="FavoriteScreen" size="small" />
+        <CustomText label="Search" size="small" />
       </ContainerLayout>
     </>
   );
 };
-export default FavoriteScreen;
+export default Search;

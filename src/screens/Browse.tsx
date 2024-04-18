@@ -16,10 +16,7 @@ import Animated, {useSharedValue} from 'react-native-reanimated';
 
 const Tab = createBottomTabNavigator();
 export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
-const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
-  navigation,
-  route,
-}) => {
+const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
   const scrollY = useSharedValue(0);
   const [status, setStatus] = useState<TAnimeStatus>('airing');
   const getAnimeSearchQuery = useQuery({
@@ -33,7 +30,7 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
   const animeListing = getAnimeSearchQuery.data?.data ?? [];
   const imageHeight = sh(210);
   const handleDetail = (id: string) => {
-    navigation.navigate('DetailScreen', {id});
+    navigation.navigate('Detail', {id});
   };
 
   const getContent = (routeName: TAnimeStatus) => {
@@ -56,13 +53,15 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
                   position: 'absolute',
                   zIndex: -1,
                   backgroundColor: Colors.black,
-                  width: Dimensions.get('window').width,
+                  width: Dimensions.get('screen').width,
                   height: sh(45),
                   opacity: scrollY,
                 }}
               />
             )}
-            <TouchableOpacity style={{alignItems: 'center'}} onPress={() => {}}>
+            <TouchableOpacity
+              style={{alignItems: 'center'}}
+              onPress={() => navigation.toggleDrawer()}>
               <Image
                 style={{width: sw(25), height: sw(25)}}
                 source={require('@assets/menu.png')}
@@ -70,7 +69,7 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
             </TouchableOpacity>
             <TouchableOpacity
               style={{marginLeft: 'auto', alignItems: 'center'}}
-              onPress={() => {}}>
+              onPress={() => navigation.navigate('Search')}>
               <Image
                 style={{width: sw(25), height: sw(25)}}
                 source={require('@assets/search.png')}
@@ -355,4 +354,4 @@ const BrowseScreen: AppNavigationScreen<'BrowseScreen'> = ({
     </>
   );
 };
-export default BrowseScreen;
+export default Browse;

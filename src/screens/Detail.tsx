@@ -19,7 +19,7 @@ import {
 } from 'react-native';
 import Animated, {useSharedValue} from 'react-native-reanimated';
 
-const DetailScreen: AppNavigationScreen<'DetailScreen'> = ({
+const Detail: AppNavigationScreen<'Detail'> = ({
   navigation,
   route,
 }) => {
@@ -186,4 +186,4 @@ const DetailScreen: AppNavigationScreen<'DetailScreen'> = ({
     </>
   );
 };
-export default DetailScreen;
+export default Detail;
