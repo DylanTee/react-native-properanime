@@ -21,7 +21,7 @@ import LoveButton from '@components/Shared/LoveButton';
 const Tab = createBottomTabNavigator();
 export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
 const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
-  const scrollY = useSharedValue(0);
+  const shared = useSharedValue(0);
   const [status, setStatus] = useState<TAnimeStatus>('airing');
   const limit = 20;
   const getAnimeSearchQuery = useInfiniteQuery({
@@ -90,7 +90,7 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
                   backgroundColor: Colors.black,
                   width: Dimensions.get('screen').width,
                   height: sh(45),
-                  opacity: scrollY,
+                  opacity: shared,
                 }}
               />
             )}
@@ -118,7 +118,7 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
             data={animeListing.slice(1)}
             onScroll={e => {
               if (anime && animeListing.length > 0) {
-                scrollY.value = e.nativeEvent.contentOffset.y / imageHeight;
+                shared.value = e.nativeEvent.contentOffset.y / imageHeight;
               }
             }}
             ListHeaderComponent={() => (

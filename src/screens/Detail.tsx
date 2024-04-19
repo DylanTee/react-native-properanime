@@ -21,7 +21,7 @@ import {
 import Animated, {useSharedValue} from 'react-native-reanimated';
 
 const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
-  const scrollY = useSharedValue(1);
+  const shared = useSharedValue(1);
   const getAnimeDetailQuery = useQuery({
     queryKey: ['animeDetail', route.params.id],
     queryFn: async () => {
@@ -72,7 +72,7 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
                     height: imageHeight,
                     position: 'absolute',
                     zIndex: -1,
-                    opacity: scrollY,
+                    opacity: shared,
                   },
                 ]}
                 resizeMode="cover"
@@ -80,7 +80,7 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
               <ScrollView
                 showsVerticalScrollIndicator={false}
                 onScroll={e => {
-                  scrollY.value =
+                  shared.value =
                     1 - e.nativeEvent.contentOffset.y / imageHeight;
                 }}
                 ref={scrollViewRef}
@@ -91,6 +91,8 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
                     flex: 1,
                     backgroundColor: Colors.black,
                     padding: sw(10),
+                    borderTopLeftRadius: sw(20),
+                    borderTopRightRadius: sw(20),
                   }}>
                   <CustomText
                     label={anime.title}
