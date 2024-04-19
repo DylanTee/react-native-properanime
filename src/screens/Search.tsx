@@ -1,39 +1,57 @@
 import ContainerLayout from '@components/Layout/ContainerLayout';
 import SizedBox from '@components/Shared/SizedBox';
 import {AppNavigationScreen} from '@libs/react.navigation.lib';
-import {sfont, sw} from '@libs/responsive.lib';
+import {sfont, sh, sw} from '@libs/responsive.lib';
 import {Colors} from '@styles/Colors';
-import React, {useState} from 'react';
-import {
-  ActivityIndicator,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Image, TextInput, TouchableOpacity, View} from 'react-native';
 import useDebounce from '@libs/useDebounce';
-import {useQuery} from '@tanstack/react-query';
+import {useInfiniteQuery} from '@tanstack/react-query';
 import axiosClient from '@libs/axios.lib';
 import {FlashList} from '@shopify/flash-list';
 import AnimeCard from '@components/Shared/AnimeCard';
 import CustomText from '@components/Shared/CustomText';
+import {debounce} from 'lodash';
+import Skeleton from '@components/Shared/Skeleton';
 
 const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
+  const searchTextRef = useRef<TextInput>(null);
   const [searchText, setSearchText] = useState<string>('');
-  const debouncedSearchText = useDebounce(searchText, 2000);
+  const debouncedSearchText = useDebounce(searchText, 500);
   const isTransitioning = searchText !== debouncedSearchText;
-  const getAnimeSearchQuery = useQuery({
-    queryKey: ['animeDetail', debouncedSearchText],
-    queryFn: async () => {
+  const limit = 20;
+  const getAnimeSearchQuery = useInfiniteQuery({
+    initialPageParam: 1,
+    queryKey: ['searchAnime', debouncedSearchText],
+    queryFn: async ({pageParam = 1}) => {
       const {data} = await axiosClient.get(
-        `/v4/anime?q=${debouncedSearchText}`,
+        `/v4/anime?q=${debouncedSearchText}&limit=${limit}&page=${pageParam}`,
       );
       return data;
     },
-    enabled: !isTransitioning && searchText.length > 0,
+    getNextPageParam: (lastPage, allPages) => {
+      const hasNextPage = lastPage.pagination.has_next_page;
+      return hasNextPage ? allPages.length + 1 : undefined;
+    },
   });
-  const animeListing = getAnimeSearchQuery.data?.data ?? [];
+  const animeListing: any[] =
+    getAnimeSearchQuery.data?.pages.flatMap(page => {
+      return page.data;
+    }) ?? [];
   const isLoading = getAnimeSearchQuery.isFetching || isTransitioning;
+  const debouncedOnEndReached = debounce(() => {
+    if (!isLoading && getAnimeSearchQuery.hasNextPage) {
+      getAnimeSearchQuery.fetchNextPage();
+    }
+  }, 1000);
+
+  useEffect(() => {
+    searchTextRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    getAnimeSearchQuery.refetch();
+  }, [debouncedSearchText]);
 
   return (
     <>
@@ -55,6 +73,7 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
           </TouchableOpacity>
           <SizedBox width={sw(10)} />
           <TextInput
+            ref={searchTextRef}
             placeholder="Search"
             placeholderTextColor={Colors.lightGray}
             style={{
@@ -80,14 +99,11 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
             </TouchableOpacity>
           )}
         </View>
+
         <View style={{flex: 1, backgroundColor: Colors.black}}>
-          {isLoading ? (
-            <View
-              style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-              <ActivityIndicator size={'large'} color={Colors.primary} />
-            </View>
-          ) : (
+          {debouncedSearchText.length > 0 && (
             <FlashList
+              showsVerticalScrollIndicator={false}
               estimatedItemSize={100}
               numColumns={2}
               data={animeListing}
@@ -104,6 +120,33 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
                     />
                   )}
                 </View>
+              )}
+              ListFooterComponent={() => (
+                <>
+                  {isLoading && (
+                    <View
+                      style={{
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                        flexWrap: 'wrap',
+                        padding: sw(10),
+                      }}>
+                      {Array.from(Array(6), (_a, i) => (
+                        <Skeleton
+                          key={i}
+                          loaderStyle={{
+                            width: '48%',
+                            height: sh(210),
+                            margin: '1%',
+                            backgroundColor: Colors.lightGray,
+                          }}
+                        />
+                      ))}
+                    </View>
+                  )}
+                  <SizedBox height={sh(50)} />
+                </>
               )}
               renderItem={({item, index}: {item: any; index: number}) => (
                 <AnimeCard
@@ -126,6 +169,8 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
                   }}
                 />
               )}
+              onEndReached={debouncedOnEndReached}
+              onEndReachedThreshold={0.8}
             />
           )}
         </View>

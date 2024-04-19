@@ -81,6 +81,7 @@ const Detail: AppNavigationScreen<'Detail'> = ({navigation, route}) => {
                 resizeMode="cover"
               />
               <ScrollView
+                showsVerticalScrollIndicator={false}
                 onScroll={e => {
                   scrollY.value =
                     1 - e.nativeEvent.contentOffset.y / imageHeight;

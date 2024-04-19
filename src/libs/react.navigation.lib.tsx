@@ -73,7 +73,7 @@ export default function Router() {
             <View style={{alignItems: 'center'}}>
               <CustomText
                 numberOfLines={1}
-                label={'Version 1.0.0'}
+                label={'Version 1.0.1'}
                 size="medium"
                 styles={{
                   color: Colors.lightGray,

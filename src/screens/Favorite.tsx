@@ -42,6 +42,7 @@ const Favorite: AppNavigationScreen<'Favorite'> = ({navigation, route}) => {
             />
           </View>
           <FlashList
+            showsVerticalScrollIndicator={false}
             estimatedItemSize={100}
             numColumns={2}
             data={lovedAnimes}

@@ -2,7 +2,6 @@ import React, {ReactNode} from 'react';
 import {SafeAreaView, StatusBar, View, useWindowDimensions} from 'react-native';
 import {DeviceInfoLib} from '@libs/device.info.lib';
 import {Colors} from '@styles/Colors';
-import {Global} from '@styles/Global';
 import {navigationRef} from '@libs/react.navigation.lib';
 
 interface LayoutProps {
@@ -28,8 +27,12 @@ export default function ContainerLayout({children}: LayoutProps) {
               marginTop: windowDimensions.height / 6,
               backgroundColor: Colors.white,
               alignSelf: 'center',
+              elevation: 4,
+              shadowColor: Colors.black,
+              shadowOffset: {width: 0, height: 2},
+              shadowOpacity: 0.1,
+              shadowRadius: 4,
             },
-            Global.shadowLine,
           ]}>
           {children}
         </View>
