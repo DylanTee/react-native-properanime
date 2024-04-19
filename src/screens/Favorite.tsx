@@ -3,7 +3,7 @@ import AnimeCard, {TAnime} from '@components/Shared/AnimeCard';
 import CustomText from '@components/Shared/CustomText';
 import SizedBox from '@components/Shared/SizedBox';
 import {AppNavigationScreen} from '@libs/react.navigation.lib';
-import {sfont, sw} from '@libs/responsive.lib';
+import {sw} from '@libs/responsive.lib';
 import {useAnimeStore} from '@libs/zustand.lib';
 import {FlashList} from '@shopify/flash-list';
 import {Colors} from '@styles/Colors';
@@ -55,6 +55,8 @@ const Favorite: AppNavigationScreen<'Favorite'> = ({navigation, route}) => {
                   rating: item.rating,
                   score: item.score,
                   image: item.image,
+                  video: item.video,
+                  background: item.background,
                 }}
                 styles={{
                   padding: '5%',

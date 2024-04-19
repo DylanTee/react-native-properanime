@@ -157,6 +157,8 @@ const Search: AppNavigationScreen<'Search'> = ({navigation, route}) => {
                     rating: item.rating,
                     score: item.score,
                     image: item.images.jpg.large_image_url,
+                    background: item.background,
+                    video: item.trailer.embed_url,
                   }}
                   styles={{
                     padding: '5%',

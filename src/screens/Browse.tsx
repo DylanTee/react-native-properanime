@@ -13,17 +13,14 @@ import React, {useState} from 'react';
 import {Dimensions, Image, TouchableOpacity, View} from 'react-native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Animated, {useSharedValue} from 'react-native-reanimated';
-import AnimeCard from '@components/Shared/AnimeCard';
-import {useAnimeStore} from '@libs/zustand.lib';
+import AnimeCard, {TAnime} from '@components/Shared/AnimeCard';
 import {debounce} from 'lodash';
 import Skeleton from '@components/Shared/Skeleton';
+import LoveButton from '@components/Shared/LoveButton';
 
 const Tab = createBottomTabNavigator();
 export type TAnimeStatus = 'airing' | 'complete' | 'upcoming';
 const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
-  const lovedAnimes = useAnimeStore(state => state.lovedAnimes);
-  const love = useAnimeStore(state => state.love);
-  const unlove = useAnimeStore(state => state.unlove);
   const scrollY = useSharedValue(0);
   const [status, setStatus] = useState<TAnimeStatus>('airing');
   const limit = 20;
@@ -47,7 +44,19 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
       return page.data;
     }) ?? [];
 
-  const anime: any = animeListing.length > 0 ? animeListing[0] : null;
+  const anime: TAnime | null =
+    animeListing.length > 0
+      ? {
+          mal_id: animeListing[0].mal_id,
+          title: animeListing[0].title,
+          year: animeListing[0].year,
+          rating: animeListing[0].rating,
+          score: animeListing[0].score,
+          image: animeListing[0].images.jpg.large_image_url,
+          background: animeListing[0].background,
+          video: animeListing[0].trailer.embed_url,
+        }
+      : null;
   const imageHeight = sh(210);
   const handleDetail = (id: string) => {
     navigation.navigate('Detail', {id});
@@ -106,7 +115,7 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
             showsVerticalScrollIndicator={false}
             estimatedItemSize={100}
             numColumns={2}
-            data={animeListing}
+            data={animeListing.slice(1)}
             onScroll={e => {
               if (anime && animeListing.length > 0) {
                 scrollY.value = e.nativeEvent.contentOffset.y / imageHeight;
@@ -119,7 +128,7 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
                     activeOpacity={1}
                     onPress={() => handleDetail(anime.mal_id)}>
                     <Image
-                      src={anime.images.jpg.large_image_url}
+                      src={anime.image}
                       style={{
                         width: '100%',
                         height: sh(210),
@@ -152,56 +161,11 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
                             type={'primary'}
                             size={'medium'}
                             title="START WATCHING TRAILER"
-                            onPress={() =>
-                              handleWatchTrailer(anime.trailer.embed_url)
-                            }
+                            onPress={() => handleWatchTrailer(anime.video)}
                           />
                         </View>
                         <SizedBox width={sw(10)} />
-                        <TouchableOpacity
-                          style={{
-                            flex: 1,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            borderWidth: 2,
-                            borderRadius: sw(5),
-                            borderColor: Colors.primary,
-                          }}
-                          onPress={() => {
-                            if (
-                              lovedAnimes.find(
-                                data => data.mal_id == anime.mal_id,
-                              )
-                            ) {
-                              unlove(anime.mal_id);
-                            } else {
-                              love([
-                                ...lovedAnimes,
-                                {
-                                  mal_id: anime.mal_id,
-                                  title: anime.title,
-                                  rating: anime.rating,
-                                  score: anime.score,
-                                  image: anime.images.jpg.large_image_url,
-                                  year: anime.year,
-                                },
-                              ]);
-                            }
-                          }}>
-                          {lovedAnimes.find(
-                            data => data.mal_id == anime.mal_id,
-                          ) ? (
-                            <Image
-                              style={{width: sw(25), height: sw(25)}}
-                              source={require('@assets/active_love.png')}
-                            />
-                          ) : (
-                            <Image
-                              style={{width: sw(25), height: sw(25)}}
-                              source={require('@assets/unactive_love.png')}
-                            />
-                          )}
-                        </TouchableOpacity>
+                        <LoveButton data={anime} />
                       </View>
                     </View>
                   </TouchableOpacity>
@@ -268,6 +232,8 @@ const Browse: AppNavigationScreen<'Browse'> = ({navigation, route}) => {
                   rating: item.rating,
                   score: item.score,
                   image: item.images.jpg.large_image_url,
+                  video: item.trailer.embed_url,
+                  background: item.background,
                 }}
                 styles={{
                   padding: '5%',
