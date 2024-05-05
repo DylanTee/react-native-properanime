@@ -14,7 +14,7 @@ import {
   DrawerNavigationProp,
   DrawerScreenProps,
 } from '@react-navigation/drawer';
-import {Image, View} from 'react-native';
+import {Image, Linking, TouchableOpacity, View} from 'react-native';
 import {sh, sw} from './responsive.lib';
 import SizedBox from '@components/Shared/SizedBox';
 import CustomText from '@components/Shared/CustomText';
@@ -70,10 +70,25 @@ export default function Router() {
             />
             <DrawerItemList {...props} />
             <SizedBox height={sh(20)} />
+            <TouchableOpacity
+              style={{alignSelf: 'center'}}
+              onPress={() => {
+                Linking.openURL('https://pr0per.vercel.app/privacy-policy');
+              }}>
+              <CustomText
+                numberOfLines={1}
+                label={'Privacy Policy'}
+                size="small"
+                styles={{
+                  color: Colors.lightGray,
+                }}
+              />
+            </TouchableOpacity>
+            <SizedBox height={sh(20)} />
             <View style={{alignItems: 'center'}}>
               <CustomText
                 numberOfLines={1}
-                label={'Version 1.0.1'}
+                label={'Version 1.0.0'}
                 size="medium"
                 styles={{
                   color: Colors.lightGray,
